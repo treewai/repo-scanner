@@ -1,6 +1,10 @@
 package server
 
+import "github.com/gofiber/fiber/v2/middleware/logger"
+
 func (s *server) registerServices() {
+	s.app.Use(logger.New())
+
 	v1 := s.app.Group("/v1")
 	{
 		v1.Post("/repositories", s.service.AddRepository)

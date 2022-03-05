@@ -28,7 +28,7 @@ type server struct {
 	done chan struct{}
 }
 
-func NewServer(db db.DB, cfg *Config) Server {
+func NewServer(db db.Database, cfg *Config) Server {
 	s := &server{
 		cfg: cfg,
 		app: fiber.New(fiber.Config{

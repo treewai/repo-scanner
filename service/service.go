@@ -18,10 +18,10 @@ type Service interface {
 }
 
 type service struct {
-	db db.DB
+	db db.Database
 }
 
-func NewService(db db.DB) Service {
+func NewService(db db.Database) Service {
 	return &service{
 		db: db,
 	}
