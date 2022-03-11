@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	getter "github.com/hashicorp/go-getter"
+	"gorm.io/datatypes"
 )
 
 type Scanner interface {
@@ -32,7 +33,7 @@ func (s *scanner) Scan(j *Job) {
 	}()
 
 	p := s.dir(j.Repo.ID)
-	if err := getter.Get(p, j.Repo.Link); err != nil {
+	if err := getter.Get(p, j.Repo.Url); err != nil {
 		j.Err = err
 		return
 	}
@@ -68,15 +69,32 @@ func (s *scanner) scan(j *Job) filepath.WalkFunc {
 		}
 		defer f.Close()
 
-		var n int
+		var line int64
 		sc := bufio.NewScanner(f)
 		for sc.Scan() {
-			n++
+			line++
 			for _, word := range strings.Fields(sc.Text()) {
 				if strings.HasPrefix(word, "public_key") ||
 					strings.HasPrefix(word, "private_key") {
 					// TODO: populate and result found pattern
-					fmt.Printf("%s:%d %s\n", rel, n, word)
+
+					j.Findings = append(j.Findings, datatypes.JSONMap{
+						"type":   "xxx",
+						"ruleId": "yyy",
+						"locaton": datatypes.JSONMap{
+							"path": rel,
+							"position": datatypes.JSONMap{
+								"begin": datatypes.JSONMap{
+									"line": line,
+								},
+							},
+						},
+						"metadata": datatypes.JSONMap{
+							"description": "zzz",
+							"severity":    "zzz",
+						},
+					})
+					fmt.Printf("%s:%d %s\n", rel, line, word)
 				}
 			}
 		}
