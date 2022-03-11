@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  postgres-server:
+    image: postgres:14.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./etc/migration:/docker-entrypoint-initdb.d
+    networks:
+      - mynet
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - postgres-server
+    #command: ["./wait-for-postgres.sh", "postgres-server:5432", "yutthana", "--", "./secret-scanner"]
+    ports:
+      - "8080:8080"
+    networks:
+      - mynet
+
+volumes:
+  db:
+    driver: local
+
+# Networks to be created to facilitate communication between containers
+networks:
+  mynet:
+    driver: bridge
