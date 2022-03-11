@@ -2,6 +2,7 @@ package service
 
 import (
 	"secret-scanner/db"
+	"secret-scanner/models"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,14 +16,27 @@ type Service interface {
 
 	ScanRepository(c *fiber.Ctx) error
 	GetScanResults(c *fiber.Ctx) error
+
+	UpdateScanResult(result *models.Result) error
 }
 
 type service struct {
-	db db.Database
+	db       db.Database
+	register RegisterFunc
 }
 
-func NewService(db db.Database) Service {
+func NewService(db db.Database, f RegisterFunc) Service {
 	return &service{
-		db: db,
+		db:       db,
+		register: f,
+	}
+}
+
+type RegisterFunc func(*models.Result) error
+
+func Register(scanc chan<- *models.Result) RegisterFunc {
+	return func(req *models.Result) error {
+		scanc <- req
+		return nil
 	}
 }

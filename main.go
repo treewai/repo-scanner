@@ -6,24 +6,31 @@ import (
 	"os/signal"
 	"secret-scanner/db"
 	"secret-scanner/server"
+	"strconv"
 	"syscall"
 )
 
 func main() {
 	db, err := db.NewClient(&db.Config{
-		Hostname: "fullstack-postgres",
-		Port:     "5432",
-		Name:     "fullstack_api",
-		User:     "steven",
-		Password: "password",
+		Hostname: os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		Name:     os.Getenv("DB_NAME"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
 	})
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	max, err := strconv.Atoi(os.Getenv("APP_SCAN_QUEUE"))
+	if err != nil {
+		log.Fatalf("invalid APP_SCAN_QUEUE, err: %v", err)
+	}
 	srvCfg := &server.Config{
-		Name:      "SecretScanner",
-		ClientURL: ":8080",
+		Name:      os.Getenv("APP_NAME"),
+		ClientURL: os.Getenv("APP_LISTEN_URL"),
+		RepoDir:   os.Getenv("APP_REPO_DIR"),
+		ScanQueue: max,
 	}
 	srv := server.NewServer(db, srvCfg)
 
