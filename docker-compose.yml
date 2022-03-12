@@ -24,6 +24,9 @@ services:
     depends_on:
       - postgres-server
     #command: ["./wait-for-postgres.sh", "postgres-server:5432", "yutthana", "--", "./secret-scanner"]
+    #command: sh -c /wait
+    environment:
+      - WAIT_HOSTS=postgres-server:5432
     ports:
       - "8080:8080"
     networks:
