@@ -1,9 +1,11 @@
 package server
 
 import (
+	"context"
 	"secret-scanner/db"
 	"secret-scanner/models"
 	"secret-scanner/pkg/scanner"
+	"secret-scanner/pkg/worker"
 	"secret-scanner/service"
 	"time"
 
@@ -26,8 +28,8 @@ type server struct {
 	app     *fiber.App
 	service service.Service
 
-	scanner scanner.Scanner
-	scanc   chan *models.Result
+	worker worker.Worker
+	scanc  chan *models.Result
 
 	// a channel to listen stop message
 	stopc chan struct{}
@@ -41,16 +43,17 @@ func NewServer(db db.Database, cfg *Config) Server {
 		ServerHeader: cfg.Name,
 		Prefork:      cfg.Prefork,
 	}
-	scfg := &scanner.Config{
-		Path: cfg.RepoDir,
+	wcfg := worker.Config{
+		MaxWorker: cfg.MaxWorker,
+		WorkerDir: cfg.RepoDir,
 	}
-	scanc := make(chan *models.Result, cfg.ScanQueue)
+	scanc := make(chan *models.Result, cfg.MaxWorker)
 
 	s := &server{
 		cfg:     cfg,
 		app:     fiber.New(fcfg),
 		service: service.NewService(db, service.Register(scanc)),
-		scanner: scanner.NewScanner(scfg),
+		worker:  worker.NewWorker(&wcfg),
 		scanc:   scanc,
 		stopc:   make(chan struct{}),
 		done:    make(chan struct{}),
@@ -66,11 +69,13 @@ func (s *server) Start() error {
 		select {
 		case <-s.stopc:
 			s.app.Shutdown()
+			s.worker.Stop()
 			close(s.done)
 		case <-s.done:
 		}
 	}()
 
+	s.worker.Start()
 	go s.runScanner()
 
 	return s.app.Listen(s.cfg.ClientURL)
@@ -108,9 +113,10 @@ func (s *server) scan(result *models.Result) {
 
 	j := &scanner.Job{
 		Repo: result.Repository,
+		Ctx:  context.Background(),
 		Done: make(chan struct{}, 1),
 	}
-	s.scanner.Scan(j)
+	s.worker.Do(j)
 
 	select {
 	case <-j.Done:
@@ -122,8 +128,12 @@ func (s *server) scan(result *models.Result) {
 				"findings": j.Findings,
 			}
 		}
-		result.FinishedAt = time.Now()
-		s.service.UpdateScanResult(result)
+	case <-j.Ctx.Done():
+		result.Status = models.StatusFailure
 	case <-s.done:
+		return
 	}
+
+	result.FinishedAt = time.Now()
+	s.service.UpdateScanResult(result)
 }

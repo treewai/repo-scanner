@@ -6,5 +6,5 @@ type Config struct {
 	Prefork   bool
 
 	RepoDir   string
-	ScanQueue int
+	MaxWorker int
 }

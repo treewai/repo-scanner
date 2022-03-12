@@ -21,9 +21,9 @@ type scanner struct {
 	path string
 }
 
-func NewScanner(cfg *Config) Scanner {
+func NewScanner(path string) Scanner {
 	return &scanner{
-		path: cfg.Path,
+		path: path,
 	}
 }
 
@@ -37,6 +37,7 @@ func (s *scanner) Scan(j *Job) {
 		j.Err = err
 		return
 	}
+	defer os.RemoveAll(p)
 
 	err := filepath.Walk(p, s.scan(j))
 	if err != nil {

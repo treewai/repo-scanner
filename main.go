@@ -22,15 +22,15 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	max, err := strconv.Atoi(os.Getenv("APP_SCAN_QUEUE"))
+	max, err := strconv.Atoi(os.Getenv("APP_MAX_WORKER"))
 	if err != nil {
-		log.Fatalf("invalid APP_SCAN_QUEUE, err: %v", err)
+		log.Fatalf("invalid APP_MAX_WORKER, err: %v", err)
 	}
 	srvCfg := &server.Config{
 		Name:      os.Getenv("APP_NAME"),
 		ClientURL: os.Getenv("APP_LISTEN_URL"),
 		RepoDir:   os.Getenv("APP_REPO_DIR"),
-		ScanQueue: max,
+		MaxWorker: max,
 	}
 	srv := server.NewServer(db, srvCfg)
 
