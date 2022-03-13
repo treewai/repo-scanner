@@ -2,8 +2,8 @@ package db
 
 import "secret-scanner/models"
 
-func (db *database) AddRepository(repos []*models.Repository) error {
-	result := db.conn.Table("repository").Create(&repos)
+func (db *database) AddRepository(repo *models.Repository) error {
+	result := db.conn.Table("repository").Create(repo)
 	return result.Error
 }
 

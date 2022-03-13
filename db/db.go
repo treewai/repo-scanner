@@ -10,7 +10,7 @@ import (
 
 // Database inteface for database
 type Database interface {
-	AddRepository(repos []*models.Repository) error
+	AddRepository(repo *models.Repository) error
 	GetRepositories() ([]*models.Repository, error)
 	GetRepositoryById(repoId string) (*models.Repository, error)
 	UpdateRepository(repo *models.Repository) error
