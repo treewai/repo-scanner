@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: Secret Scanner
+  version: 'v1.0.0'
+paths:
+  /repositories:
+    parameters:
+    - $ref: '#/components/parameters/pageParam'
+    - $ref: '#/components/parameters/limitParam'
+    get:
+      summary: get the paginated list of repositories
+      operationId: getRepositories
+      description: Retrieve subordinates of specific user by email.
+      tags: [ repositories ]
+      responses:
+        200:
+          description: Successful operation. Returns an array of repositories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Repository'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: add a repository
+      operationId: addRepositories
+      description: Add a repository.
+      tags: [ repositories ]
+      requestBody:
+        description: Repository object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Repository'
+      responses:
+        201:
+          description: Successful operation
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /repositories/{repoId}:
+    parameters:
+    - $ref: '#/components/parameters/idParam'
+    get:
+      summary: get a repository
+      operationId: getRepository
+      description: Find a specific repository by providing a repoId.
+      tags: [ repositories ]
+      responses:
+        200:
+          description: Successful operation. Returns the repository corresponding to the given id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: update a repository
+      operationId: updateRepository
+      description: Update a repository.
+      tags: [ repositories ]
+      responses:
+        200:
+          description: Successful operation
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: delete a repository
+      operationId: deleteRepository
+      description: Delete a repository.
+      tags: [ repositories ]
+      responses:
+        200:
+          description: Successful operation
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /scan/{repoId}:
+    parameters:
+    - $ref: '#/components/parameters/idParam'
+    get:
+      summary: get a repository
+      operationId: scanRepository
+      description: Find a specific repository by providing a repoId.
+      tags: [ repositories ]
+      responses:
+        200:
+          description: Successful operation. Returns the repository corresponding to the given id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    Repository:
+      type: object
+      required: [ repoId, name, link ]
+      properties:
+        repoId:
+          type: string
+        name:
+          type: string
+        link:
+          type: string
+    Result:
+      type: object
+      required: [ scanId ]
+      properties:
+        scanId:
+          type: string
+        status:
+          type: string
+          enum: [ queued, inProgress, success, failure ]
+        repository:
+            $ref: '#/components/schemas/Repository'
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+        queuedAt:
+          type: string
+          format: date
+        scanningAt:
+          type: string
+          format: date
+        finishedAt:
+          type: string
+          format: date
+    Finding:
+      type: object
+      properties:
+        type:
+          type: string
+        ruleId:
+          type: string
+        location:
+          type: object
+          properties:
+            path:
+              type: string
+            positions:
+              type: object
+              properties:
+                begin:
+                  type: object
+                  properties:
+                    line:
+                      type: integer
+                      format: int32
+        metadata:
+          type: object
+          properties:
+            description:
+              type: string
+            severity:
+              type: string
+  parameters:
+    idParam:
+      name: repoId
+      in: path
+      description: Employee id.
+      required: true
+      schema:
+        type: string
+    pageParam:
+      name: page
+      in: query
+      description: Number of page to start returning the results.
+      required: false
+      schema:
+        type: integer
+        format: int32
+    limitParam:
+      name: limit
+      in: query
+      description: Maximum number of items to return.
+      required: false
+      schema:
+        type: integer
+        format: int32
+  responses:
+    BadRequestError:
+      description: Invalid request message parameters
+    InternalServerError:
+      description: Internal server error
