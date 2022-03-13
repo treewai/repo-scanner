@@ -77,11 +77,10 @@ func (s *scanner) scan(j *Job) filepath.WalkFunc {
 			for _, word := range strings.Fields(sc.Text()) {
 				if strings.HasPrefix(word, "public_key") ||
 					strings.HasPrefix(word, "private_key") {
-					// TODO: populate and result found pattern
 
 					j.Findings = append(j.Findings, datatypes.JSONMap{
-						"type":   "xxx",
-						"ruleId": "yyy",
+						"type":   "sast",
+						"ruleId": "1",
 						"locaton": datatypes.JSONMap{
 							"path": rel,
 							"position": datatypes.JSONMap{
@@ -91,8 +90,8 @@ func (s *scanner) scan(j *Job) filepath.WalkFunc {
 							},
 						},
 						"metadata": datatypes.JSONMap{
-							"description": "zzz",
-							"severity":    "zzz",
+							"description": "Define secret key",
+							"severity":    "HIGN",
 						},
 					})
 					fmt.Printf("%s:%d %s\n", rel, line, word)
