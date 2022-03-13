@@ -19,7 +19,8 @@ type Result struct {
 	ID         string            `json:"id" gorm:"default:uuid_generate_v3()"`
 	Status     Status            `json:"status"`
 	RepoID     string            `json:"-"`
-	Repository *Repository       `json:"repository" gorm:"-"`
+	RepoName   string            `json:"repositoryName" gorm:"->"`
+	RepoUrl    string            `json:"repositoryUrl" gorm:"->"`
 	Findings   datatypes.JSONMap `json:"findings,omitempty"`
 	QueuedAt   time.Time         `json:"queuedAt"`
 	ScanningAt time.Time         `json:"scanningAt,omitempty"`

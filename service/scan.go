@@ -18,13 +18,13 @@ func (s *service) ScanRepository(c *fiber.Ctx) error {
 	res := models.Result{
 		Status: models.StatusQueued,
 		RepoID: repo.ID,
-		//Repository: repo,
 	}
 	result, err := s.db.AddResult(&res)
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-	result.Repository = repo
+	result.RepoName = repo.Name
+	result.RepoUrl = repo.Url
 
 	if err := s.register(result); err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)

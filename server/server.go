@@ -112,7 +112,10 @@ func (s *server) scan(result *models.Result) {
 	s.service.UpdateScanResult(result)
 
 	j := &scanner.Job{
-		Repo: result.Repository,
+		Req: &scanner.Request{
+			ID:  result.ID,
+			URL: result.RepoUrl,
+		},
 		Ctx:  context.Background(),
 		Done: make(chan struct{}, 1),
 	}

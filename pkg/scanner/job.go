@@ -2,15 +2,19 @@ package scanner
 
 import (
 	"context"
-	"secret-scanner/models"
 
 	"gorm.io/datatypes"
 )
 
 type Job struct {
-	Repo     *models.Repository
+	Req      *Request
 	Findings []datatypes.JSONMap
 	Ctx      context.Context
 	Err      error
 	Done     chan struct{}
+}
+
+type Request struct {
+	ID  string
+	URL string
 }

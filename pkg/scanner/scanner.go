@@ -32,8 +32,8 @@ func (s *scanner) Scan(j *Job) {
 		j.Done <- struct{}{}
 	}()
 
-	p := s.dir(j.Repo.ID)
-	if err := getter.Get(p, j.Repo.Url); err != nil {
+	p := s.dir(j.Req.ID)
+	if err := getter.Get(p, j.Req.URL); err != nil {
 		j.Err = err
 		return
 	}
@@ -51,7 +51,7 @@ func (s *scanner) dir(id string) string {
 }
 
 func (s *scanner) scan(j *Job) filepath.WalkFunc {
-	base := s.dir(j.Repo.ID)
+	base := s.dir(j.Req.ID)
 	return func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
