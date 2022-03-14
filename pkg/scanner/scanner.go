@@ -65,6 +65,9 @@ func (s *scanner) scan(j *Job) filepath.WalkFunc {
 		if info.IsDir() || info.Mode()&os.ModeSymlink == os.ModeSymlink {
 			return nil
 		}
+		if !filepath.HasPrefix(path, base) {
+			return nil
+		}
 		rel, err := filepath.Rel(base, path)
 		if err != nil {
 			return err

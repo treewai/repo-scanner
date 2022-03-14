@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io/fs"
+	"os"
 	"testing"
 	"time"
 
@@ -22,9 +23,9 @@ type mockFileInfo struct {
 
 func (m mockFileInfo) Name() string       { return "" }
 func (m mockFileInfo) Size() int64        { return 0 }
-func (m mockFileInfo) Mode() fs.FileMode  { return 0 }
+func (m mockFileInfo) Mode() fs.FileMode  { return m.mode }
 func (m mockFileInfo) ModTime() time.Time { return time.Now() }
-func (m mockFileInfo) IsDir() bool        { return true }
+func (m mockFileInfo) IsDir() bool        { return m.isDir }
 func (m mockFileInfo) Sys() interface{}   { return nil }
 
 func getScanner() *scanner {
@@ -61,7 +62,7 @@ func TestScannerScanError(t *testing.T) {
 		},
 		Ctx: context.TODO(),
 	}
-	err := s.scan(job)("/app/repos/1", nil, errInvalidFile)
+	err := s.scan(job)("/app/repos/1/test.go", nil, errInvalidFile)
 	assert.Error(t, errInvalidFile, err)
 }
 
@@ -75,6 +76,48 @@ func TestScannerScanSkipDir(t *testing.T) {
 		},
 		Ctx: context.TODO(),
 	}
-	err := s.scan(job)("/app/repos/1", mockFileInfo{isDir: true}, nil)
+	err := s.scan(job)("/app/repos/1/test", mockFileInfo{isDir: true}, nil)
 	assert.NoError(t, err)
+}
+
+func TestScannerScanSkipSymlink(t *testing.T) {
+	s := getScanner()
+
+	job := &Job{
+		Req: &Request{
+			ID:  "1",
+			URL: "https://example.com/test",
+		},
+		Ctx: context.TODO(),
+	}
+	err := s.scan(job)("/app/repos/1/test.go", mockFileInfo{mode: os.ModeSymlink}, nil)
+	assert.NoError(t, err)
+}
+
+func TestScannerScanSkipInvalidPath(t *testing.T) {
+	s := getScanner()
+
+	job := &Job{
+		Req: &Request{
+			ID:  "1",
+			URL: "https://example.com/test",
+		},
+		Ctx: context.TODO(),
+	}
+	err := s.scan(job)("/app/repos/2/test.go", mockFileInfo{}, nil)
+	assert.NoError(t, err)
+}
+
+func TestScannerScanSkipOpenFileError(t *testing.T) {
+	s := getScanner()
+
+	job := &Job{
+		Req: &Request{
+			ID:  "1",
+			URL: "https://example.com/test",
+		},
+		Ctx: context.TODO(),
+	}
+	err := s.scan(job)("/app/repos/1/test.go", mockFileInfo{}, nil)
+	assert.Error(t, err)
 }
