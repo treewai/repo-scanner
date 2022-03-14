@@ -36,25 +36,22 @@ func TestServiceGetScanResults(t *testing.T) {
 			name: "success",
 			resp: []*models.Result{
 				{
-					ID:     "1",
-					Status: models.StatusInProgress,
-					Repository: &models.Repository{
-						ID: "101",
-					},
+					ID:       "1",
+					Status:   models.StatusInProgress,
+					RepoName: "Repop-1",
+					RepoUrl:  "https://example.com/test1",
 				},
 				{
-					ID:     "2",
-					Status: models.StatusSuccess,
-					Repository: &models.Repository{
-						ID: "102",
-					},
+					ID:       "2",
+					Status:   models.StatusSuccess,
+					RepoName: "Repop-2",
+					RepoUrl:  "https://example.com/test2",
 				},
 				{
-					ID:     "3",
-					Status: models.StatusFailure,
-					Repository: &models.Repository{
-						ID: "103",
-					},
+					ID:       "3",
+					Status:   models.StatusFailure,
+					RepoName: "Repop-3",
+					RepoUrl:  "https://example.com/test3",
 				},
 			},
 			code: fiber.StatusOK,

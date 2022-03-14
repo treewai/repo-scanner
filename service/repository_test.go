@@ -3,7 +3,6 @@ package service
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http/httptest"
 	"secret-scanner/models"
@@ -38,7 +37,6 @@ func (m *mockDB) GetRepositoryById(repoId string) (*models.Repository, error) {
 }
 
 func (m *mockDB) UpdateRepository(repo *models.Repository) error {
-	fmt.Println("update repo", repo)
 	m.req = repo
 	return m.err
 }
