@@ -53,6 +53,12 @@ func (s *scanner) dir(id string) string {
 func (s *scanner) scan(j *Job) filepath.WalkFunc {
 	base := s.dir(j.Req.ID)
 	return func(path string, info fs.FileInfo, err error) error {
+		select {
+		case <-j.Ctx.Done():
+			return j.Ctx.Err()
+		default:
+		}
+
 		if err != nil {
 			return err
 		}
