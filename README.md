@@ -23,7 +23,10 @@ cd secret-scanner
 docker-compose up
 ```
 
-
+- API Documentation
+```
+http://localhost/swagger
+```
 
 - Add repository
 ```
@@ -63,11 +66,5 @@ curl -X POST "http://localhost:8080/v1/scans/1"
 ```
 curl -X GET "http://localhost:8080/v1/scans"
 
-[{"id":"1","status":"Success","repositoryName":"yutthana","repositoryUrl":"github.com/treewai/secret-scanner","findings":{"findings":[{"locaton":{"path":"README.md","position":{"begin":{"line":15}}},"metadata":{"description":"Define secret key","severity":"HIGN"},"ruleId":"1","type":"sast"},{"locaton":{"path":"README.md","position":{"begin":{"line":15}}},"metadata":{"description":"Define secret key","severity":"HIGN"},"ruleId":"1","type":"sast"}]},"queuedAt":"0001-01-01T00:00:00Z","scanningAt":"2022-03-13T19:27:50.784136Z","finishedAt":"2022-03-13T19:27:52.743708Z"}]
+[{"scanId":"1","status":"Success","repositoryName":"yutthana","repositoryUrl":"github.com/treewai/secret-scanner","findings":{"findings":[{"locaton":{"path":"README.md","position":{"begin":{"line":15}}},"metadata":{"description":"Define secret key","severity":"HIGN"},"ruleId":"1","type":"sast"},{"locaton":{"path":"README.md","position":{"begin":{"line":15}}},"metadata":{"description":"Define secret key","severity":"HIGN"},"ruleId":"1","type":"sast"}]},"queuedAt":"0001-01-01T00:00:00Z","scanningAt":"2022-03-13T19:27:50.784136Z","finishedAt":"2022-03-13T19:27:52.743708Z"}]
 ```
-
-**Remark:**
-
-- Only has OpenAPI 3.0 spec (not swagger UI interface)
-- Unit tests (not completed)
-- Exported function comment (not completed)
