@@ -66,5 +66,5 @@ curl -X POST "http://localhost:8080/v1/scans/1"
 ```
 curl -X GET "http://localhost:8080/v1/scans"
 
-[{"scanId":"1","status":"Success","repositoryName":"yutthana","repositoryUrl":"github.com/treewai/secret-scanner","findings":{"findings":[{"locaton":{"path":"README.md","position":{"begin":{"line":15}}},"metadata":{"description":"Define secret key","severity":"HIGN"},"ruleId":"1","type":"sast"},{"locaton":{"path":"README.md","position":{"begin":{"line":15}}},"metadata":{"description":"Define secret key","severity":"HIGN"},"ruleId":"1","type":"sast"}]},"queuedAt":"0001-01-01T00:00:00Z","scanningAt":"2022-03-13T19:27:50.784136Z","finishedAt":"2022-03-13T19:27:52.743708Z"}]
+[{"scanId":"1","status":"Success","repositoryName":"yutthana","repositoryUrl":"github.com/treewai/secret-scanner","findings":[{"type":"sast","ruleId":"1","locaton":{"path":"README.md","position":{"begin":{"line":17}}},"metadata":{"severity":"HIGN","description":"Define secret key"}},{"type":"sast","ruleId":"1","locaton":{"path":"README.md","position":{"begin":{"line":17}}},"metadata":{"severity":"HIGN","description":"Define secret key"}}],"queuedAt":"0001-01-01T00:00:00Z","scanningAt":"2022-03-13T19:27:50.784136Z","finishedAt":"2022-03-13T19:27:52.743708Z"}]
 ```

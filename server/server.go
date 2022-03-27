@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"secret-scanner/db"
 	"secret-scanner/models"
 	"secret-scanner/pkg/scanner"
@@ -10,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/datatypes"
 )
 
 const (
@@ -125,11 +125,14 @@ func (s *server) scan(result *models.Result) {
 	case <-j.Done:
 		if j.Err != nil {
 			result.Status = models.StatusFailure
+			break
+		}
+
+		if b, err := json.Marshal(j.Findings); err != nil {
+			result.Status = models.StatusFailure
 		} else {
 			result.Status = models.StatusSuccess
-			result.Findings = datatypes.JSONMap{
-				"findings": j.Findings,
-			}
+			result.Findings = b
 		}
 	case <-j.Ctx.Done():
 		result.Status = models.StatusFailure

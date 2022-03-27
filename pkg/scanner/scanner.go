@@ -87,13 +87,13 @@ func (s *scanner) scan(j *Job) filepath.WalkFunc {
 				if strings.HasPrefix(word, "public_key") ||
 					strings.HasPrefix(word, "private_key") {
 
-					j.Findings = append(j.Findings, datatypes.JSONMap{
+					j.Findings = append(j.Findings, map[string]interface{}{
 						"type":   "sast",
 						"ruleId": "1",
-						"locaton": datatypes.JSONMap{
+						"locaton": map[string]interface{}{
 							"path": rel,
-							"position": datatypes.JSONMap{
-								"begin": datatypes.JSONMap{
+							"position": map[string]interface{}{
+								"begin": map[string]interface{}{
 									"line": line,
 								},
 							},
