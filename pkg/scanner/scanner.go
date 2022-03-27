@@ -2,7 +2,6 @@ package scanner
 
 import (
 	"bufio"
-	"fmt"
 	"io/fs"
 	"os"
 	"path"
@@ -27,6 +26,7 @@ func NewScanner(path string) Scanner {
 	}
 }
 
+// Scan scans the pattern the given repository job
 func (s *scanner) Scan(j *Job) {
 	defer func() {
 		j.Done <- struct{}{}
@@ -103,7 +103,6 @@ func (s *scanner) scan(j *Job) filepath.WalkFunc {
 							"severity":    "HIGN",
 						},
 					})
-					fmt.Printf("%s:%d %s\n", rel, line, word)
 				}
 			}
 		}
