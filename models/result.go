@@ -16,7 +16,7 @@ const (
 )
 
 type Result struct {
-	ID         string            `json:"id" gorm:"default:uuid_generate_v3()"`
+	ID         string            `json:"scanId" gorm:"default:uuid_generate_v3()"`
 	Status     Status            `json:"status"`
 	RepoID     string            `json:"-"`
 	RepoName   string            `json:"repositoryName" gorm:"->"`

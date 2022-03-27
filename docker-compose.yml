@@ -30,6 +30,19 @@ services:
     networks:
       - mynet
 
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v3.52.5
+    container_name: swagger_ui_container
+    ports:
+      - "80:8080"
+    volumes:
+      - ./etc/openapi.yaml:/usr/share/nginx/html/doc/openapi.yaml
+    environment:
+      BASE_URL: /swagger
+      URLS: "[ { url: \"doc/openapi.yaml\", name: \"Secret-Scanner\" } ]"
+    networks:
+      - mynet
+
 volumes:
   db:
     driver: local

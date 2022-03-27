@@ -4,12 +4,9 @@ info:
   version: 'v1.0.0'
 paths:
   /repositories:
-    parameters:
-    - $ref: '#/components/parameters/pageParam'
-    - $ref: '#/components/parameters/limitParam'
     get:
       summary: get the paginated list of repositories
-      operationId: getRepositories
+      operationId: GetRepositories
       description: Retrieve subordinates of specific user by email.
       tags: [ repositories ]
       responses:
@@ -27,7 +24,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     post:
       summary: add a repository
-      operationId: addRepositories
+      operationId: AddRepository
       description: Add a repository.
       tags: [ repositories ]
       requestBody:
@@ -36,7 +33,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Repository'
+              $ref: '#/components/schemas/RepositoryInfo'
       responses:
         201:
           description: Successful operation
@@ -49,7 +46,7 @@ paths:
     - $ref: '#/components/parameters/idParam'
     get:
       summary: get a repository
-      operationId: getRepository
+      operationId: GetRepositoryByID
       description: Find a specific repository by providing a repoId.
       tags: [ repositories ]
       responses:
@@ -65,9 +62,16 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     patch:
       summary: update a repository
-      operationId: updateRepository
+      operationId: UpdateRepository
       description: Update a repository.
       tags: [ repositories ]
+      requestBody:
+        description: Repository object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepositoryInfo'
       responses:
         200:
           description: Successful operation
@@ -77,7 +81,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     delete:
       summary: delete a repository
-      operationId: deleteRepository
+      operationId: DeleteRepository
       description: Delete a repository.
       tags: [ repositories ]
       responses:
@@ -87,21 +91,36 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /scan/{repoId}:
-    parameters:
-    - $ref: '#/components/parameters/idParam'
+  /scans:
     get:
-      summary: get a repository
-      operationId: scanRepository
-      description: Find a specific repository by providing a repoId.
+      summary: get respositories scanning results
+      operationId: GetScanResults
+      description: Find repositories scanning results.
       tags: [ repositories ]
       responses:
         200:
-          description: Successful operation. Returns the repository corresponding to the given id
+          description: Successful operation. Returns all respositories scanning result.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Result'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Result'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /scans/{repoId}:
+    parameters:
+    - $ref: '#/components/parameters/idParam'
+    post:
+      summary: scan a repository
+      operationId: ScanRepository
+      description: Scan a specific repository by providing a repoId.
+      tags: [ repositories ]
+      responses:
+        200:
+          description: Successful operation.
         400:
           $ref: '#/components/responses/BadRequestError'
         500:
@@ -118,6 +137,14 @@ components:
           type: string
         link:
           type: string
+    RepositoryInfo:
+      type: object
+      required: [ name, url ]
+      properties:
+        name:
+          type: string
+        url:
+          type: string
     Result:
       type: object
       required: [ scanId ]
@@ -126,9 +153,11 @@ components:
           type: string
         status:
           type: string
-          enum: [ queued, inProgress, success, failure ]
-        repository:
-            $ref: '#/components/schemas/Repository'
+          enum: [ Queued, In Progress, Success, Failure ]
+        repositoryName:
+          type: string
+        repositoryUrl:
+          type: string
         findings:
           type: array
           items:
@@ -174,26 +203,10 @@ components:
     idParam:
       name: repoId
       in: path
-      description: Employee id.
+      description: Repository id.
       required: true
       schema:
         type: string
-    pageParam:
-      name: page
-      in: query
-      description: Number of page to start returning the results.
-      required: false
-      schema:
-        type: integer
-        format: int32
-    limitParam:
-      name: limit
-      in: query
-      description: Maximum number of items to return.
-      required: false
-      schema:
-        type: integer
-        format: int32
   responses:
     BadRequestError:
       description: Invalid request message parameters
